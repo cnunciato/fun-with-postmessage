@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+        let messages;
+        let clientOrigin = location.search.split("?clientOrigin=")[1];
+
+        window.addEventListener("message", message => {
+            if (message.origin === clientOrigin) {
+                addMessage(message.data);
+                setTimeout(() => addMessage(`You said, '${message.data}'.`), 1000);
+            }
+        });
+
+        function loadMessages() {
+            messages = JSON.parse(localStorage.getItem("messages") || "[]");
+            post("messages", messages);
+            post("load", null);
+        }
+
+        function addMessage(message) {
+            messages.push(message);
+            saveMessages();
+        }
+
+        function saveMessages() {
+            localStorage.setItem("messages", JSON.stringify(messages, null, 4));
+            post("messages", messages);
+        }
+
+        function post(event, data) {
+            window.parent.postMessage({ event, data }, clientOrigin);
+        }
+
+        loadMessages();
+    </script>
+</head>
+<body></body>
+</html>

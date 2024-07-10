@@ -1,0 +1,10 @@
+{
+  "name": "chat-widget-poc",
+  "version": "0.1.0",
+  "scripts": {
+    "start": "concurrently --kill-others 'npx http-server -p 8080 -c-1 ./client-app' 'npx http-server -p 8081 -c-1 --cors ./server-app'"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
