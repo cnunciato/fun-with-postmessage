@@ -2,7 +2,7 @@
   "name": "chat-widget-poc",
   "version": "0.1.0",
   "scripts": {
-    "start": "concurrently --kill-others 'npx http-server -p 8080 -c-1 ./client-app' 'npx http-server -p 8081 -c-1 --cors ./server-app'"
+    "start": "concurrently --kill-others 'npx http-server -p 8080 -c-1 ./static-site' 'npx http-server -p 8081 -c-1 --cors ./server-app' 'npm --prefix ./spa-site run dev'"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

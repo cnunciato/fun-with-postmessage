@@ -3,21 +3,25 @@
 Experimenting with using a headless iframe as a chat client.
 
 ```bash
-npm install # The "apps" themselves have no dependencies; this is just to host them locally.
+npm install
+npm --prefix spa-site install
 npm start
 ```
 
-... then browse to http://localhost:8080.
+... then browse to either of these URLs:
+
+* `static-site`, a simple static site that runs at http://localhost:8080
+* `spa-site`, an single-page app written in React (via Vite) that runs at http://localhost:5173
 
 ## How it works
 
-Running `npm start` starts two local services: `client-app`, which acts like a simple website, and `server-app`, which acts like a hosted chat widget (the idea being to simulate message passing between domains). The client app includes a `script` tag that loads a script hosted by `server-app` and then instantiates the chat widget by calling `widget.init()`, which writes an `iframe` into the page that acts as a chat widget.
+Running `npm start` launches three local services: the two sites above, which act as consumers/embedders of a hypothetical chat widget, plus a third that acts as a web application hosting the widget and the "service" that powers it. The intent is to show how a "headless" (i.e., invisible) `iframe` and `window.postMessage` can enable message passing across  domain boundaries as well as grant full control over the widget's UI -- styling, positioning, etc. -- to consuming apps of various types.
 
-Importantly, the `iframe` is "headless"; it contains no UI of its own. Its jobs are to:
+Both `static-site` and `spa-site` embed the chat widget using a single `script` tag that loads a script from `server-app` and then instantiates the chat widget by calling `widget.init()`. The script then writes an invisible `iframe` into the page, and from that point forward, the frame and script conspire to:
 
-* accept chat inputs from `client-app`
-* notify `client-app` of "responses" from `server-app`
-* draw a UI into `client-app`'s DOM and keep it updated
-* deserialize "conversations" from localStorage on startup to get the widget into the UI quickly
+* handle chat inputs from `static-site` and `spa-site`
+* notify both of "responses" from `server-app`
+* draw a UI into the DOM of each site using some default styling, and keep the DOM updated
+* deserialize "conversations" from localStorage on startup to get the widget bootstrapped into the UI quickly
 
-One of the many benefits of this approach is that it allows `client-app` to position and manage the chat widget however it likes because the widget's UI belongs to its DOM, rather than the `iframe`'s. The widget also "ships" with some default styling, but that styling can be overridden by `client-app` if necessary. (See `otherpage.html` for an example.)
+One of the many benefits of this approach is that it allows consuming sites to position and manage the chat widget however they like because the widget UI belongs to the consuming site's DOM, rather than to the `iframe` itself. This makes the widget much more lightweight, flexible, and customizable (default styles can be overridden, positioning can be inline or fixed, etc, etc. -- see http://localhost:8080/otherpage.html for an example) and thus easier to integrate and maintain across different web properties.
